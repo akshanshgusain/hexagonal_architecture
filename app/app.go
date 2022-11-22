@@ -15,7 +15,8 @@ func Start() {
 
 	// wiring
 	// handler -> Service -> repository (dependency injection)
-	ch := CustomerHandlers{service.NewCustomerService(domain.NewCustomerRepositoryStub())}
+	//ch := CustomerHandlers{service.NewCustomerService(domain.NewCustomerRepositoryStub())}
+	ch := CustomerHandlers{service.NewCustomerService(domain.NewCustomerRepositoryDb())}
 
 	// routes
 
