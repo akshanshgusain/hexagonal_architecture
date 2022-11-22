@@ -14,7 +14,7 @@ func Start() {
 	router := mux.NewRouter()
 
 	// wiring
-	// handler -> Service -> repository
+	// handler -> Service -> repository (dependency injection)
 	ch := CustomerHandlers{service.NewCustomerService(domain.NewCustomerRepositoryStub())}
 
 	// routes
