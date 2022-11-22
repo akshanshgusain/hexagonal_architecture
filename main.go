@@ -16,7 +16,7 @@ type Customers struct {
 func main() {
 	// routes
 	http.HandleFunc("/greet", greet)
-	http.HandleFunc("/getAllCustomers", getAllCustomers)
+	http.HandleFunc("/customers", getAllCustomers)
 
 	// Starting Server
 	err := http.ListenAndServe("localhost:8080", nil)
