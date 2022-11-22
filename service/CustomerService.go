@@ -11,3 +11,7 @@ type CustomerService interface {
 type DefaultCustomerService struct {
 	repo domain.CustomerRepository
 }
+
+func (s *DefaultCustomerService) GetAllCustomer() ([]domain.Customer, error) {
+	return s.repo.FindAll()
+}
