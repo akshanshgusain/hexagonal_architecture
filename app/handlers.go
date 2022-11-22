@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
+	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 )
@@ -43,4 +44,14 @@ func getAllCustomers(w http.ResponseWriter, r *http.Request) {
 			log.Fatal("JSON Encode Error")
 		}
 	}
+}
+
+func getCustomer(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	customerId := vars["customer_id"]
+	fmt.Fprint(w, customerId)
+}
+
+func createCustomer(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprint(w, "Post request received")
 }
