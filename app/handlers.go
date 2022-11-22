@@ -3,8 +3,7 @@ package app
 import (
 	"encoding/json"
 	"encoding/xml"
-	"fmt"
-	"github.com/gorilla/mux"
+	"github.com/akshanshgusain/Hexagonal-Architecture/service"
 	"log"
 	"net/http"
 )
@@ -17,19 +16,17 @@ type Customers struct {
 
 // Handlers
 
-func greet(w http.ResponseWriter, r *http.Request) {
-	_, err := fmt.Fprint(w, "Hello Welcome to the Hexagonal Architecture APP")
-	if err != nil {
-		return
-	}
+type CustomerHandlers struct {
+	service service.CustomerService
 }
 
-func getAllCustomers(w http.ResponseWriter, r *http.Request) {
-	customers := []Customers{
-		{"Akshansh Gusain", "New Delhi", "110001"},
-		{"Priyanka Khurana", "New Delhi", "110001"},
-		{"Rachit Kawar", "Jodhpur", "132901"},
-	}
+func (ch *CustomerHandlers) getAllCustomers(w http.ResponseWriter, r *http.Request) {
+	//customers := []Customers{
+	//	{"Akshansh Gusain", "New Delhi", "110001"},
+	//	{"Priyanka Khurana", "New Delhi", "110001"},
+	//	{"Rachit Kawar", "Jodhpur", "132901"},
+	//}
+	customers, _ := ch.service.GetAllCustomers()
 
 	if r.Header.Get("Content-Type") == "application/xml" {
 		w.Header().Add("Content-Type", "application/xml")
@@ -44,14 +41,4 @@ func getAllCustomers(w http.ResponseWriter, r *http.Request) {
 			log.Fatal("JSON Encode Error")
 		}
 	}
-}
-
-func getCustomer(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	customerId := vars["customer_id"]
-	fmt.Fprint(w, customerId)
-}
-
-func createCustomer(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "Post request received")
 }
