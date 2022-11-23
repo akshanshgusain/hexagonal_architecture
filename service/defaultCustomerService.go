@@ -1,6 +1,9 @@
 package service
 
-import "github.com/akshanshgusain/Hexagonal-Architecture/domain"
+import (
+	"github.com/akshanshgusain/Hexagonal-Architecture/domain"
+	"github.com/akshanshgusain/Hexagonal-Architecture/errs"
+)
 
 // Stub
 
@@ -12,7 +15,7 @@ func (s *DefaultCustomerService) GetAllCustomers() ([]domain.Customer, error) {
 	return s.repo.FindAll()
 }
 
-func (s *DefaultCustomerService) GetCustomer(id string) (*domain.Customer, error) {
+func (s *DefaultCustomerService) GetCustomer(id string) (*domain.Customer, *errs.AppError) {
 	return s.repo.ById(id)
 }
 

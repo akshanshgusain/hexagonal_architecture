@@ -2,6 +2,8 @@ package domain
 
 import (
 	"context"
+	"github.com/akshanshgusain/Hexagonal-Architecture/errs"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"log"
@@ -41,15 +43,18 @@ func (d CustomerRepositoryDB) FindAll() ([]Customer, error) {
 	return d.customers, nil
 }
 
-func (d CustomerRepositoryDB) ById(id string) (*Customer, error) {
+func (d CustomerRepositoryDB) ById(id string) (*Customer, *errs.AppError) {
 	var c Customer
 	var dt pgtype.Date
 	byIdSql := "select customer_id, name, date_of_birth ,city, zipcode, status from customers where customer_id = $1"
 	err := d.pool.QueryRow(context.Background(), byIdSql, id).Scan(&c.Id, &c.Name, &dt, &c.City, &c.Zipcode, &c.Status)
 	c.DateOfBirth = dateToString(dt)
 	if err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, errs.NewNotFoundError("customer not found")
+		}
 		log.Println("Error while scanning data from row " + err.Error())
-		return nil, err
+		return nil, errs.NewUnexpectedError("unexpected database error")
 	}
 	return &c, nil
 }
@@ -58,7 +63,7 @@ func (d CustomerRepositoryDB) ById(id string) (*Customer, error) {
 
 func NewCustomerRepositoryDb() CustomerRepositoryDB {
 	urlExample := "postgres://hello_fastapi:hello_fastapi@localhost:5432/banking"
-	//conn, err := pgx.Connect(context.Background(), os.Getenv("DATABASE_URL"))
+	//conn, errs := pgx.Connect(context.Background(), os.Getenv("DATABASE_URL"))
 	pool, err := pgxpool.New(context.Background(), urlExample)
 	if err != nil {
 		log.Println("Error connecting to DB" + err.Error())

@@ -45,8 +45,8 @@ func (ch *CustomerHandlers) getCustomer(w http.ResponseWriter, r *http.Request) 
 	cId := vars["customer_id"]
 	c, err := ch.service.GetCustomer(cId)
 	if err != nil {
-		w.WriteHeader(http.StatusNotFound)
-		fmt.Fprint(w, err.Error())
+		w.WriteHeader(err.Code)
+		fmt.Fprint(w, err.Message)
 	} else {
 		w.Header().Add("Content-Type", "application/json")
 		err := json.NewEncoder(w).Encode(c)
