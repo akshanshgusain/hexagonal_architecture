@@ -28,11 +28,11 @@ func (d CustomerRepositoryDB) FindAll() ([]Customer, error) {
 		var c Customer
 		var dt pgtype.Date
 		err := rows.Scan(&c.Id, &c.Name, &dt, &c.City, &c.Zipcode, &c.Status)
-		c.DateOfBirth = dt.Time.String()
 		if err != nil {
 			log.Println("Error while scanning data from row " + err.Error())
 			return nil, err
 		}
+		c.DateOfBirth = dateToString(dt) // covert date to string
 		d.customers = append(d.customers, c)
 	}
 
@@ -47,7 +47,9 @@ func NewCustomerRepositoryDb() CustomerRepositoryDB {
 		log.Println("Error connecting to DB" + err.Error())
 		panic(err)
 	}
-	//defer dbpool.Close()
-
 	return CustomerRepositoryDB{dbpool: dbpool}
+}
+
+func dateToString(dt pgtype.Date) string {
+	return dt.Time.String()
 }
