@@ -9,6 +9,8 @@ type Customer struct {
 	Status      string
 }
 
+// Server side PORT
+
 type CustomerRepository interface {
 	FindAll() ([]Customer, error)
 }
