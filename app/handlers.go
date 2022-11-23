@@ -3,7 +3,9 @@ package app
 import (
 	"encoding/json"
 	"encoding/xml"
+	"fmt"
 	"github.com/akshanshgusain/Hexagonal-Architecture/service"
+	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 )
@@ -34,6 +36,23 @@ func (ch *CustomerHandlers) getAllCustomers(w http.ResponseWriter, r *http.Reque
 		err := json.NewEncoder(w).Encode(customers)
 		if err != nil {
 			log.Fatal("JSON Encode Error")
+		}
+	}
+}
+
+func (ch *CustomerHandlers) getCustomer(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	cId := vars["customer_id"]
+	c, err := ch.service.GetCustomer(cId)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprint(w, err.Error())
+	} else {
+		w.Header().Add("Content-Type", "application/json")
+		err := json.NewEncoder(w).Encode(c)
+		if err != nil {
+			log.Println("getCustomer: error encoding customer")
+			return
 		}
 	}
 }
