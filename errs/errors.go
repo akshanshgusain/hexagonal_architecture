@@ -3,8 +3,14 @@ package errs
 import "net/http"
 
 type AppError struct {
-	Code    int
-	Message string
+	Code    int    `json:",omitempty"`
+	Message string `json:"message"`
+}
+
+func (a *AppError) AsMessage() *AppError {
+	return &AppError{
+		Message: a.Message,
+	}
 }
 
 func NewNotFoundError(message string) *AppError {

@@ -3,18 +3,11 @@ package app
 import (
 	"encoding/json"
 	"encoding/xml"
-	"fmt"
 	"github.com/akshanshgusain/Hexagonal-Architecture/service"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 )
-
-type Customers struct {
-	Name    string `json:"name" xml:"name"`
-	City    string `json:"city" xml:"city"`
-	Zipcode string `json:"zip_code" xml:"zip_code"`
-}
 
 // Handlers
 
@@ -45,14 +38,16 @@ func (ch *CustomerHandlers) getCustomer(w http.ResponseWriter, r *http.Request) 
 	cId := vars["customer_id"]
 	c, err := ch.service.GetCustomer(cId)
 	if err != nil {
-		w.WriteHeader(err.Code)
-		fmt.Fprint(w, err.Message)
+		writeResponse(w, err.Code, err.AsMessage())
 	} else {
-		w.Header().Add("Content-Type", "application/json")
-		err := json.NewEncoder(w).Encode(c)
-		if err != nil {
-			log.Println("getCustomer: error encoding customer")
-			return
-		}
+		writeResponse(w, http.StatusOK, c)
+	}
+}
+
+func writeResponse(w http.ResponseWriter, code int, data interface{}) {
+	w.Header().Add("Content-Type", "application/json")
+	w.WriteHeader(code)
+	if err := json.NewEncoder(w).Encode(data); err != nil {
+		panic(err.Error())
 	}
 }
