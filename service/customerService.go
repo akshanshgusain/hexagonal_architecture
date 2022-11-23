@@ -6,4 +6,5 @@ import "github.com/akshanshgusain/Hexagonal-Architecture/domain"
 
 type CustomerService interface {
 	GetAllCustomers() ([]domain.Customer, error)
+	GetCustomer(id string) (*domain.Customer, error)
 }
