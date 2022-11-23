@@ -7,15 +7,17 @@ import (
 	"log"
 )
 
+// Server Side Adapter
+
 type CustomerRepositoryDB struct {
 	customers []Customer
-	dbpool    *pgxpool.Pool
+	pool      *pgxpool.Pool
 }
 
 func (d CustomerRepositoryDB) FindAll() ([]Customer, error) {
 
 	findAllSql := "select customer_id, name, date_of_birth ,city, zipcode, status from customers"
-	rows, err := d.dbpool.Query(context.Background(), findAllSql)
+	rows, err := d.pool.Query(context.Background(), findAllSql)
 	if err != nil {
 		log.Println("Error while querying customer table " + err.Error())
 		return nil, err
@@ -42,12 +44,12 @@ func (d CustomerRepositoryDB) FindAll() ([]Customer, error) {
 func NewCustomerRepositoryDb() CustomerRepositoryDB {
 	urlExample := "postgres://hello_fastapi:hello_fastapi@localhost:5432/banking"
 	//conn, err := pgx.Connect(context.Background(), os.Getenv("DATABASE_URL"))
-	dbpool, err := pgxpool.New(context.Background(), urlExample)
+	pool, err := pgxpool.New(context.Background(), urlExample)
 	if err != nil {
 		log.Println("Error connecting to DB" + err.Error())
 		panic(err)
 	}
-	return CustomerRepositoryDB{dbpool: dbpool}
+	return CustomerRepositoryDB{pool: pool}
 }
 
 func dateToString(dt pgtype.Date) string {
