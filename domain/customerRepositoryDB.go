@@ -2,11 +2,13 @@ package domain
 
 import (
 	"context"
+	"fmt"
 	"github.com/akshanshgusain/Hexagonal-Architecture/errs"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"log"
+	"os"
 )
 
 // Server Side Adapter
@@ -62,9 +64,16 @@ func (d CustomerRepositoryDB) ById(id string) (*Customer, *errs.AppError) {
 // Helper Functions
 
 func NewCustomerRepositoryDb() CustomerRepositoryDB {
-	urlExample := "postgres://hello_fastapi:hello_fastapi@localhost:5432/banking"
-	//conn, errs := pgx.Connect(context.Background(), os.Getenv("DATABASE_URL"))
-	pool, err := pgxpool.New(context.Background(), urlExample)
+	dbUser := os.Getenv("DB_USER")
+	dbPassword := os.Getenv("DB_PASSWORD")
+	dbAddress := os.Getenv("DB_ADDRESS")
+	dbPort := os.Getenv("DB_PORT")
+	dbName := os.Getenv("DB_NAME")
+	dbSource := fmt.Sprintf("postgres://%v:%v@%v:%v/%v", dbUser, dbPassword, dbAddress, dbPort, dbName)
+
+	//DB_USER=hello_fastapi DB_PASSWORD=hello_fastapi DB_ADDRESS=localhost DB_PORT=5432 DB_NAME=banking
+	
+	pool, err := pgxpool.New(context.Background(), dbSource)
 	if err != nil {
 		log.Println("Error connecting to DB" + err.Error())
 		panic(err)
