@@ -3,9 +3,9 @@ package app
 import (
 	"encoding/json"
 	"encoding/xml"
+	"github.com/akshanshgusain/Hexagonal-Architecture/logger"
 	"github.com/akshanshgusain/Hexagonal-Architecture/service"
 	"github.com/gorilla/mux"
-	"log"
 	"net/http"
 )
 
@@ -22,13 +22,13 @@ func (ch *CustomerHandlers) getAllCustomers(w http.ResponseWriter, r *http.Reque
 		w.Header().Add("Content-Type", "application/xml")
 		err := xml.NewEncoder(w).Encode(customers)
 		if err != nil {
-			log.Fatal("XML Encode Error")
+			logger.Fatal("XML Encode Error")
 		}
 	} else {
 		w.Header().Add("Content-Type", "application/json")
 		err := json.NewEncoder(w).Encode(customers)
 		if err != nil {
-			log.Fatal("JSON Encode Error")
+			logger.Fatal("JSON Encode Error")
 		}
 	}
 }
