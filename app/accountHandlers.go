@@ -22,13 +22,14 @@ func (a *AccountHandlers) createAccount(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	request.CustomerId = cId
-
 	account, appError := a.service.NewAccount(request)
-
 	if appError != nil {
 		writeResponse(w, appError.Code, appError.Message)
 		return
 	}
-
 	writeResponse(w, http.StatusCreated, account)
+}
+
+func (a *AccountHandlers) MakeTransaction(w http.ResponseWriter, r *http.Request) {
+
 }
