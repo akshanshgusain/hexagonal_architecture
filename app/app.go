@@ -35,9 +35,12 @@ func Start() {
 
 	// Repositories
 	customerRepositoryDB := domain.NewCustomerRepositoryDb(pool)
-	accountRepositoryDB := domain.NewAccountRepositoryDb(pool)
+	//accountRepositoryDB := domain.NewAccountRepositoryDb(pool)
 
-	ch := CustomerHandlers{service.NewCustomerService(customerRepositoryDB)}
+	// Services
+	customerService := service.NewCustomerService(customerRepositoryDB)
+
+	ch := CustomerHandlers{customerService}
 
 	// Routes
 
