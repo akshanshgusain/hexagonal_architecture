@@ -1,10 +1,12 @@
 package app
 
 import (
+	"context"
 	"fmt"
 	"github.com/akshanshgusain/Hexagonal-Architecture/domain"
 	"github.com/akshanshgusain/Hexagonal-Architecture/service"
 	"github.com/gorilla/mux"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"log"
 	"net/http"
 	"os"
@@ -29,9 +31,15 @@ func Start() {
 	// wiring
 	// handler -> Service -> repository (dependency injection)
 	//ch := CustomerHandlers{service.NewCustomerService(domain.NewCustomerRepositoryStub())}
-	ch := CustomerHandlers{service.NewCustomerService(domain.NewCustomerRepositoryDb())}
+	pool := getDbClient()
 
-	// routes
+	// Repositories
+	customerRepositoryDB := domain.NewCustomerRepositoryDb(pool)
+	accountRepositoryDB := domain.NewAccountRepositoryDb(pool)
+
+	ch := CustomerHandlers{service.NewCustomerService(customerRepositoryDB)}
+
+	// Routes
 
 	router.HandleFunc("/customers", ch.getAllCustomers).Methods(http.MethodGet)
 	router.HandleFunc("/customers/{customer_id:[0-9]+}", ch.getCustomer).Methods(http.MethodGet)
@@ -44,4 +52,22 @@ func Start() {
 	if err != nil {
 		log.Fatal(err.Error())
 	}
+}
+
+func getDbClient() *pgxpool.Pool {
+	dbUser := os.Getenv("DB_USER")
+	dbPassword := os.Getenv("DB_PASSWORD")
+	dbAddress := os.Getenv("DB_ADDRESS")
+	dbPort := os.Getenv("DB_PORT")
+	dbName := os.Getenv("DB_NAME")
+	dbSource := fmt.Sprintf("postgres://%v:%v@%v:%v/%v", dbUser, dbPassword, dbAddress, dbPort, dbName)
+
+	//DB_USER=hello_fastapi DB_PASSWORD=hello_fastapi DB_ADDRESS=localhost DB_PORT=5432 DB_NAME=banking
+
+	pool, err := pgxpool.New(context.Background(), dbSource)
+	if err != nil {
+		log.Println("Error connecting to DB" + err.Error())
+		panic(err)
+	}
+	return pool
 }

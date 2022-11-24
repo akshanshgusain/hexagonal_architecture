@@ -14,6 +14,13 @@ type Customer struct {
 	Status      string
 }
 
+// Server side PORT/ Secondary PORT
+
+type CustomerRepository interface {
+	FindAll() ([]Customer, error)
+	ById(string) (*Customer, *errs.AppError)
+}
+
 func (c *Customer) statusAsText() string {
 	statusAsText := "active"
 	if c.Status == "0" {
@@ -33,11 +40,4 @@ func (c *Customer) ToDto() dto.CustomerResponse {
 		DateOfBirth: c.DateOfBirth,
 		Status:      c.statusAsText(),
 	}
-}
-
-// Server side PORT/ Secondary PORT
-
-type CustomerRepository interface {
-	FindAll() ([]Customer, error)
-	ById(string) (*Customer, *errs.AppError)
 }

@@ -2,20 +2,18 @@ package domain
 
 import (
 	"context"
-	"fmt"
 	"github.com/akshanshgusain/Hexagonal-Architecture/errs"
+	"github.com/akshanshgusain/Hexagonal-Architecture/logger"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"log"
-	"os"
 )
 
 // Server Side Adapter
 
 type CustomerRepositoryDB struct {
-	customers []Customer
-	pool      *pgxpool.Pool
+	pool *pgxpool.Pool
 }
 
 func (d CustomerRepositoryDB) FindAll() ([]Customer, error) {
@@ -29,20 +27,22 @@ func (d CustomerRepositoryDB) FindAll() ([]Customer, error) {
 	defer rows.Close()
 
 	// loop over rows
+	var customers = make([]Customer, 0)
 
 	for rows.Next() {
 		var c Customer
 		var dt pgtype.Date
+
 		err := rows.Scan(&c.Id, &c.Name, &dt, &c.City, &c.Zipcode, &c.Status)
 		if err != nil {
 			log.Println("Error while scanning data from row " + err.Error())
 			return nil, err
 		}
 		c.DateOfBirth = dateToString(dt) // covert date to string
-		d.customers = append(d.customers, c)
+		customers = append(customers, c)
 	}
 
-	return d.customers, nil
+	return customers, nil
 }
 
 func (d CustomerRepositoryDB) ById(id string) (*Customer, *errs.AppError) {
@@ -55,7 +55,7 @@ func (d CustomerRepositoryDB) ById(id string) (*Customer, *errs.AppError) {
 		if err == pgx.ErrNoRows {
 			return nil, errs.NewNotFoundError("customer not found")
 		}
-		log.Println("Error while scanning data from row " + err.Error())
+		logger.Error("Error while scanning data from row " + err.Error())
 		return nil, errs.NewUnexpectedError("unexpected database error")
 	}
 	return &c, nil
@@ -63,21 +63,7 @@ func (d CustomerRepositoryDB) ById(id string) (*Customer, *errs.AppError) {
 
 // Helper Functions
 
-func NewCustomerRepositoryDb() CustomerRepositoryDB {
-	dbUser := os.Getenv("DB_USER")
-	dbPassword := os.Getenv("DB_PASSWORD")
-	dbAddress := os.Getenv("DB_ADDRESS")
-	dbPort := os.Getenv("DB_PORT")
-	dbName := os.Getenv("DB_NAME")
-	dbSource := fmt.Sprintf("postgres://%v:%v@%v:%v/%v", dbUser, dbPassword, dbAddress, dbPort, dbName)
-
-	//DB_USER=hello_fastapi DB_PASSWORD=hello_fastapi DB_ADDRESS=localhost DB_PORT=5432 DB_NAME=banking
-	
-	pool, err := pgxpool.New(context.Background(), dbSource)
-	if err != nil {
-		log.Println("Error connecting to DB" + err.Error())
-		panic(err)
-	}
+func NewCustomerRepositoryDb(pool *pgxpool.Pool) CustomerRepositoryDB {
 	return CustomerRepositoryDB{pool: pool}
 }
 
