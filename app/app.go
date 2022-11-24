@@ -35,17 +35,20 @@ func Start() {
 
 	// Repositories
 	customerRepositoryDB := domain.NewCustomerRepositoryDb(pool)
-	//accountRepositoryDB := domain.NewAccountRepositoryDb(pool)
+	accountRepositoryDB := domain.NewAccountRepositoryDb(pool)
 
 	// Services
 	customerService := service.NewCustomerService(customerRepositoryDB)
+	accountService := service.NewAccountService(accountRepositoryDB)
 
 	ch := CustomerHandlers{customerService}
+	ah := AccountHandlers{accountService}
 
 	// Routes
 
 	router.HandleFunc("/customers", ch.getAllCustomers).Methods(http.MethodGet)
 	router.HandleFunc("/customers/{customer_id:[0-9]+}", ch.getCustomer).Methods(http.MethodGet)
+	router.HandleFunc("/customers/{customer_id:[0-9]+}/account", ah.createAccount).Methods(http.MethodPost)
 
 	// Starting Server
 	// OS env: SERVER_ADDRESS=localhost SERVER_PORT=8080 go run main.go

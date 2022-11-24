@@ -24,7 +24,7 @@ VALUES (2000, 'Steve', '1978-12-15', 'Delhi', '110075', 1),
 DROP TABLE IF EXISTS "accounts";
 CREATE TABLE "accounts"
 (
-    "account_id"   int            NOT NULL PRIMARY KEY,
+    "account_id"   bigserial      NOT NULL PRIMARY KEY,
     "customer_id"  int            NOT NULL,
     "opening_date" timestamp      NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "account_type" varchar(10)    NOT NULL,

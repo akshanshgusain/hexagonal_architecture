@@ -14,7 +14,7 @@ type AccountRepositoryDB struct {
 func (a AccountRepositoryDB) Save(acc Account) (*Account, *errs.AppError) {
 	insertSql := "insert into accounts " +
 		"(customer_id, opening_date, account_type, amount, status) " +
-		"values ($1,$2,$3,$4,$5)"
+		"values ($1,$2,$3,$4,$5) returning account_id"
 
 	err := a.pool.QueryRow(context.Background(), insertSql, acc.CustomerId,
 		acc.OpeningDate, acc.AccountType, acc.Amount, acc.Status).Scan(&acc.AccountId)

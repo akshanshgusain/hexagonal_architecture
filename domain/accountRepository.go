@@ -1,6 +1,9 @@
 package domain
 
-import "github.com/akshanshgusain/Hexagonal-Architecture/errs"
+import (
+	"github.com/akshanshgusain/Hexagonal-Architecture/dto"
+	"github.com/akshanshgusain/Hexagonal-Architecture/errs"
+)
 
 type Account struct {
 	AccountId   string
@@ -15,4 +18,12 @@ type Account struct {
 
 type AccountRepository interface {
 	Save(Account) (*Account, *errs.AppError)
+}
+
+/*domain has the complete knowledge of the DTO thus, we should be able to ask the domain to get the DTO representation*/
+
+func (a *Account) ToNewAccountResponseDto() dto.NewAccountResponse {
+	return dto.NewAccountResponse{
+		AccountId: a.AccountId,
+	}
 }
