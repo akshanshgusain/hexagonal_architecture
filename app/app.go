@@ -51,6 +51,18 @@ func Start() {
 	router.HandleFunc("/customers/{customer_id:[0-9]+}/account", ah.createAccount).Methods(http.MethodPost)
 	router.HandleFunc("/customers/{customer_id:[0-9]+}/account/{account_id:[0-9]+}", ah.MakeTransaction).Methods(http.MethodPost)
 
+	// Middlewares
+
+	router.Use(func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// before
+
+			next.ServeHTTP(w, r)
+			// after
+			
+		})
+	})
+
 	// Starting Server
 	// OS env: SERVER_ADDRESS=localhost SERVER_PORT=8080 go run main.go
 	address := os.Getenv("SERVER_ADDRESS")
