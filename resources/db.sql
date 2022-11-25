@@ -45,7 +45,7 @@ VALUES (95470, 2000, '2020-08-22 10:20:06', 'saving', 6823.23, 1),
 DROP TABLE IF EXISTS transactions;
 CREATE TABLE transactions
 (
-    transaction_id   int            NOT NULL PRIMARY KEY,
+    transaction_id   bigserial            NOT NULL PRIMARY KEY,
     account_id       int            NOT NULL,
     amount           decimal(10, 2) NOT NULL,
     transaction_type varchar(10)    NOT NULL,
