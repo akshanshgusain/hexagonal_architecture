@@ -11,12 +11,30 @@ import (
 	"testing"
 )
 
+var router *mux.Router
+var ch CustomerHandlers
+var mockService *service.MockCustomerService
+
+func setup(t *testing.T) func() {
+	controller := gomock.NewController(t)
+
+	mockService = service.NewMockCustomerService(controller)
+	ch = CustomerHandlers{mockService}
+
+	// router
+	router = mux.NewRouter()
+	router.HandleFunc("/customers", ch.getAllCustomers)
+
+	return func() { // we don't want to call defer immediately
+		router = nil
+		defer controller.Finish()
+	}
+}
+
 func Test_should_return_customers_with_status_code_200(t *testing.T) {
 	// Arrange
-	controller := gomock.NewController(t)
-	defer controller.Finish()
-
-	mockService := service.NewMockCustomerService(controller)
+	teardown := setup(t)
+	defer teardown()
 
 	dummyCustomers := []dto.CustomerResponse{
 		{"1001", "Akshansh", "New Delhi", "110011", "2000-01-01", "1"},
@@ -24,12 +42,6 @@ func Test_should_return_customers_with_status_code_200(t *testing.T) {
 	}
 
 	mockService.EXPECT().GetAllCustomers().Return(dummyCustomers, nil)
-	ch := CustomerHandlers{mockService}
-
-	// router
-	router := mux.NewRouter()
-	router.HandleFunc("/customers", ch.getAllCustomers)
-
 	// Create a http request
 	request, _ := http.NewRequest(http.MethodGet, "/customers", nil)
 
@@ -45,18 +57,10 @@ func Test_should_return_customers_with_status_code_200(t *testing.T) {
 
 func Test_should_return_status_code_500_with_error_message(t *testing.T) {
 	// Arrange
-	controller := gomock.NewController(t)
-	defer controller.Finish()
-
-	mockService := service.NewMockCustomerService(controller)
+	teardown := setup(t)
+	defer teardown()
 
 	mockService.EXPECT().GetAllCustomers().Return(nil, errs.NewUnexpectedError("database error"))
-	ch := CustomerHandlers{mockService}
-
-	// router
-	router := mux.NewRouter()
-	router.HandleFunc("/customers", ch.getAllCustomers)
-
 	// Create a http request
 	request, _ := http.NewRequest(http.MethodGet, "/customers", nil)
 
