@@ -8,6 +8,6 @@ import (
 // client side PORT/ Primary PORT
 
 type CustomerService interface {
-	GetAllCustomers() ([]dto.CustomerResponse, error)
+	GetAllCustomers() ([]dto.CustomerResponse, *errs.AppError)
 	GetCustomer(id string) (*dto.CustomerResponse, *errs.AppError)
 }

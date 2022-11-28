@@ -13,7 +13,7 @@ type DefaultCustomerService struct {
 	repo domain.CustomerRepository
 }
 
-func (s *DefaultCustomerService) GetAllCustomers() ([]dto.CustomerResponse, error) {
+func (s *DefaultCustomerService) GetAllCustomers() ([]dto.CustomerResponse, *errs.AppError) {
 	cs, err := s.repo.FindAll()
 	if err != nil {
 		return nil, err

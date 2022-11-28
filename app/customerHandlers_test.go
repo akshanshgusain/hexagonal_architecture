@@ -2,6 +2,7 @@ package app
 
 import (
 	"github.com/akshanshgusain/Hexagonal-Architecture/dto"
+	"github.com/akshanshgusain/Hexagonal-Architecture/errs"
 	"github.com/akshanshgusain/Hexagonal-Architecture/mocks/service"
 	"github.com/golang/mock/gomock"
 	"github.com/gorilla/mux"
@@ -43,5 +44,28 @@ func Test_should_return_customers_with_status_code_200(t *testing.T) {
 }
 
 func Test_should_return_status_code_500_with_error_message(t *testing.T) {
+	// Arrange
+	controller := gomock.NewController(t)
+	defer controller.Finish()
 
+	mockService := service.NewMockCustomerService(controller)
+
+	mockService.EXPECT().GetAllCustomers().Return(nil, errs.NewUnexpectedError("database error"))
+	ch := CustomerHandlers{mockService}
+
+	// router
+	router := mux.NewRouter()
+	router.HandleFunc("/customers", ch.getAllCustomers)
+
+	// Create a http request
+	request, _ := http.NewRequest(http.MethodGet, "/customers", nil)
+
+	// Act
+	recorder := httptest.NewRecorder()
+	router.ServeHTTP(recorder, request)
+
+	// Assert
+	if recorder.Code != http.StatusInternalServerError {
+		t.Error("failed while testing the status code")
+	}
 }

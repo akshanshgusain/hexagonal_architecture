@@ -16,13 +16,13 @@ type CustomerRepositoryDB struct {
 	pool *pgxpool.Pool
 }
 
-func (d CustomerRepositoryDB) FindAll() ([]Customer, error) {
+func (d CustomerRepositoryDB) FindAll() ([]Customer, *errs.AppError) {
 
 	findAllSql := "select customer_id, name, date_of_birth ,city, zipcode, status from customers"
 	rows, err := d.pool.Query(context.Background(), findAllSql)
 	if err != nil {
 		log.Println("Error while querying customer table " + err.Error())
-		return nil, err
+		return nil, errs.NewUnexpectedError("unexpected database error")
 	}
 	defer rows.Close()
 
@@ -36,7 +36,7 @@ func (d CustomerRepositoryDB) FindAll() ([]Customer, error) {
 		err := rows.Scan(&c.Id, &c.Name, &dt, &c.City, &c.Zipcode, &c.Status)
 		if err != nil {
 			log.Println("Error while scanning data from row " + err.Error())
-			return nil, err
+			return nil, errs.NewUnexpectedError("unexpected database error")
 		}
 		c.DateOfBirth = dateToString(dt) // covert date to string
 		customers = append(customers, c)
