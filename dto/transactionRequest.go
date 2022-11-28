@@ -23,11 +23,11 @@ func (r *TransactionRequest) IsTransactionTypeDeposit() bool {
 	return r.TransactionType == DEPOSIT
 }
 
-func (t *TransactionRequest) Validate() *errs.AppError {
-	if t.TransactionType != WITHDRAWAL && t.TransactionType != DEPOSIT {
+func (r *TransactionRequest) Validate() *errs.AppError {
+	if r.TransactionType != WITHDRAWAL && r.TransactionType != DEPOSIT {
 		return errs.NewValidationError("transaction type can only be deposit or withdrawal")
 	}
-	if t.Amount < 0 {
+	if r.Amount < 0 {
 		return errs.NewValidationError("amount cannot be less than zero")
 	}
 

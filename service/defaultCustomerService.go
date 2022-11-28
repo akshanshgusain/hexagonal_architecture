@@ -8,6 +8,7 @@ import (
 
 // Stub
 
+//go:generate mockgen -destination=../mocks/service/mockCustomerService.go -package=service github.com/akshanshgusain/Hexagonal-Architecture/service CustomerService
 type DefaultCustomerService struct {
 	repo domain.CustomerRepository
 }
