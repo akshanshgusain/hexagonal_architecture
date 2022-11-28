@@ -46,10 +46,18 @@ func Start() {
 
 	// Routes
 
-	router.HandleFunc("/customers", ch.getAllCustomers).Methods(http.MethodGet)
-	router.HandleFunc("/customers/{customer_id:[0-9]+}", ch.getCustomer).Methods(http.MethodGet)
-	router.HandleFunc("/customers/{customer_id:[0-9]+}/account", ah.createAccount).Methods(http.MethodPost)
-	router.HandleFunc("/customers/{customer_id:[0-9]+}/account/{account_id:[0-9]+}", ah.MakeTransaction).Methods(http.MethodPost)
+	router.HandleFunc("/customers", ch.getAllCustomers).
+		Methods(http.MethodGet).
+		Name("GetAllCustomers")
+	router.HandleFunc("/customers/{customer_id:[0-9]+}", ch.getCustomer).
+		Methods(http.MethodGet).
+		Name("GetCustomer")
+	router.HandleFunc("/customers/{customer_id:[0-9]+}/account", ah.createAccount).
+		Methods(http.MethodPost).
+		Name("NewAccount")
+	router.HandleFunc("/customers/{customer_id:[0-9]+}/account/{account_id:[0-9]+}", ah.MakeTransaction).
+		Methods(http.MethodPost).
+		Name("NewTransaction")
 
 	// Middlewares
 
@@ -59,7 +67,7 @@ func Start() {
 
 			next.ServeHTTP(w, r)
 			// after
-			
+
 		})
 	})
 
