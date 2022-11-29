@@ -13,7 +13,7 @@ type AccountRepositoryDB struct {
 	pool *pgxpool.Pool
 }
 
-func (d AccountRepositoryDB) Save(acc Account) (*Account, *errs.AppError) {
+func (d AccountRepositoryDB) SaveA(acc Account) (*Account, *errs.AppError) {
 	insertSql := "insert into accounts " +
 		"(customer_id, opening_date, account_type, amount, status) " +
 		"values ($1,$2,$3,$4,$5) returning account_id"

@@ -29,7 +29,8 @@ func (d DefaultAccountService) NewAccount(req dto.NewAccountRequest) (*dto.NewAc
 		Status:      "1",
 	}
 
-	newAcc, err := d.repo.Save(a)
+	fmt.Println(d.repo)
+	newAcc, err := d.repo.SaveA(a)
 	if err != nil {
 		return nil, err
 	}
