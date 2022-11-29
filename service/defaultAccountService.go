@@ -20,17 +20,10 @@ func (d DefaultAccountService) NewAccount(req dto.NewAccountRequest) (*dto.NewAc
 		return nil, errr
 	}
 
-	a := domain.Account{
-		AccountId:   "",
-		CustomerId:  req.CustomerId,
-		OpeningDate: time.Now().Format("2006-01-02T15:04:05Z07:00"),
-		AccountType: req.AccountType,
-		Amount:      req.Amount,
-		Status:      "1",
-	}
+	account := domain.NewAccount(req.CustomerId, req.AccountType, req.Amount)
 
 	fmt.Println(d.repo)
-	newAcc, err := d.repo.SaveA(a)
+	newAcc, err := d.repo.SaveA(account)
 	if err != nil {
 		return nil, err
 	}
